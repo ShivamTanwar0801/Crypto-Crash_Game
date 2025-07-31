@@ -112,7 +112,7 @@ Crypto-Crash_Game/
 
 ## 📷 Preview
 
-![Crypto Crash Game Preview](./preview.png)
+![Crypto Crash Game Preview](./preview.PNG)
 
 ## 🛠 Future Improvements
 
