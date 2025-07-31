@@ -1,16 +1,49 @@
-const axios = require('axios');
-let cache = {};
+const axios = require("axios");
 
-async function getPrice(currency) {
+const API_KEY = process.env.CMC_API_KEY;
+const BASE_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest";
+
+const SYMBOL_MAP = {
+  bitcoin: "BTC",
+  ethereum: "ETH",
+};
+
+let cache = {
+  data: {},
+  timestamp: 0,
+};
+
+async function getPrices() {
   const now = Date.now();
-  currency = currency.toLowerCase();
-  if (cache[currency] && now - cache[currency].timestamp < 10000) {
-    return cache[currency].price;
+  const CACHE_DURATION = 10 * 1000; // 10 seconds
+
+  if (cache.data && now - cache.timestamp < CACHE_DURATION) {
+    return cache.data;
   }
-  const res = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${currency}&vs_currencies=usd`);
-  const price = res.data[currency].usd;
-  cache[currency] = { price, timestamp: now };
-  return price;
+
+  try {
+    const symbols = Object.values(SYMBOL_MAP).join(",");
+    const res = await axios.get(`${BASE_URL}?symbol=${symbols}&convert=USD`, {
+      headers: {
+        "X-CMC_PRO_API_KEY": API_KEY,
+      },
+    });
+
+    const prices = {};
+    for (const [key, value] of Object.entries(res.data.data)) {
+      prices[key] = parseFloat(value.quote.USD.price);
+    }
+
+    cache = {
+      data: prices,
+      timestamp: now,
+    };
+
+    return prices;
+  } catch (err) {
+    console.error("🔥 CoinMarketCap bulk request failed:", err.message);
+    throw new Error("Failed to fetch prices from CoinMarketCap");
+  }
 }
 
-module.exports = { getPrice };
+module.exports = { getPrices, SYMBOL_MAP };

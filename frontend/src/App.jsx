@@ -10,13 +10,17 @@ export default function App() {
   const [logs, setLogs] = useState([]);
   const [playerId, setPlayerId] = useState("");
   const [usdAmount, setUsdAmount] = useState("");
-  const [currency, setCurrency] = useState("usd");
+  const [currency, setCurrency] = useState("bitcoin"); // ✅ fixed default
   const [roundNumber, setRoundNumber] = useState(null);
   const [multiplier, setMultiplier] = useState(1);
   const [players, setPlayers] = useState([]);
 
+  const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
   useEffect(() => {
-    socket = io("http://localhost:3000");
+    socket = io(API_BASE, {
+      transports: ["websocket"],
+    });
 
     socket.on("connect", () =>
       appendLog("✅ Connected to WebSocket", "connected")
@@ -38,9 +42,7 @@ export default function App() {
     );
     socket.on("bet_placed", (data) =>
       appendLog(
-        `🎯 Bet Placed: ${data.playerId} → ${
-          data.usdAmount
-        } USD in ${data.currency.toUpperCase()} (${data.cryptoAmount})`,
+        `🎯 Bet Placed: ${data.playerId} → $${data.usdAmount} USD in ${data.currency.toUpperCase()} (${data.cryptoAmount})`,
         "bet"
       )
     );
@@ -54,11 +56,17 @@ export default function App() {
 
   const fetchPlayers = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/player");
+      const res = await fetch(`${API_BASE}/api/player`);
       const data = await res.json();
+
+      if (!Array.isArray(data)) {
+        throw new Error("Expected array but received: " + JSON.stringify(data));
+      }
+
       setPlayers(data);
     } catch (err) {
       appendLog("❌ Failed to load players: " + err.message, "error");
+      setPlayers([]); // fallback
     }
   };
 
@@ -68,8 +76,13 @@ export default function App() {
       return;
     }
 
+    if (isNaN(usdAmount) || Number(usdAmount) <= 0) {
+      appendLog("⚠️ USD amount must be a positive number", "error");
+      return;
+    }
+
     try {
-      const res = await fetch("http://localhost:3000/api/bet", {
+      const res = await fetch(`${API_BASE}/api/bet`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -95,15 +108,12 @@ export default function App() {
 
   const cashOut = async () => {
     if (!playerId || !roundNumber || !currency) {
-      appendLog(
-        "⚠️ Missing data for cashout (playerId, roundNumber, or currency).",
-        "error"
-      );
+      appendLog("⚠️ Missing data for cashout (playerId, roundNumber, or currency).", "error");
       return;
     }
 
     try {
-      const res = await fetch("http://localhost:3000/api/cashout", {
+      const res = await fetch(`${API_BASE}/api/cashout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -124,10 +134,7 @@ export default function App() {
       if (data.success) {
         fetchPlayers();
       } else {
-        appendLog(
-          "❌ Cashout failed: " + (data.message || "Unknown error"),
-          "error"
-        );
+        appendLog("❌ Cashout failed: " + (data.message || "Unknown error"), "error");
       }
 
       appendLog("💸 Cashout response: " + JSON.stringify(data), "cashout");
@@ -139,9 +146,9 @@ export default function App() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       fetchPlayers();
-    }, 300); // Wait for 300ms before firing
+    }, 300);
 
-    return () => clearTimeout(timeout); // Cleanup
+    return () => clearTimeout(timeout);
   }, []);
 
   return (

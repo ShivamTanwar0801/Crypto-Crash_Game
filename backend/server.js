@@ -11,17 +11,20 @@ const { socketService } = require("./services/socketService");
 
 const app = express();
 const server = http.createServer(app);
+
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"]
+    origin: ["http://localhost:5173", "https://crypto-crash-frontend-ochre.vercel.app"],
+    methods: ["GET", "POST"],
   }
 });
 
-app.use(cors({
-  origin: "http://localhost:5173",
-  methods: ["GET", "POST"]
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://crypto-crash-frontend-ochre.vercel.app"],
+    methods: ["GET", "POST"],
+  })
+);
 app.use(express.json());
 
 app.use("/api", gameRoutes);

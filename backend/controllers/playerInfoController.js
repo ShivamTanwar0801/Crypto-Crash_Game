@@ -1,9 +1,11 @@
+// controllers/playerController.js
 const Player = require("../models/Player");
-const { getPrice } = require("../services/priceService");
+const { getPrices, SYMBOL_MAP } = require("../services/priceService");
 
 async function getAllPlayers(req, res) {
   try {
     const players = await Player.find();
+    const prices = await getPrices(); // One call for all prices
     const result = [];
 
     for (const player of players) {
@@ -12,19 +14,13 @@ async function getAllPlayers(req, res) {
 
       for (const currency of Object.keys(wallet)) {
         const amount = wallet[currency];
-        const price = await getPrice(currency.toLowerCase());
+        const symbol = SYMBOL_MAP[currency.toLowerCase()];
+        const price = prices[symbol] || 0;
 
-        if (!price || typeof price !== "number" || isNaN(price)) {
-          enrichedWallet[currency.toUpperCase()] = {
-            amount,
-            usd: 0,
-          };
-        } else {
-          enrichedWallet[currency.toUpperCase()] = {
-            amount,
-            usd: parseFloat((amount * price).toFixed(2)),
-          };
-        }
+        enrichedWallet[currency.toUpperCase()] = {
+          amount,
+          usd: parseFloat((amount * price).toFixed(2)),
+        };
       }
 
       result.push({
@@ -32,10 +28,12 @@ async function getAllPlayers(req, res) {
         wallet: enrichedWallet,
       });
     }
-    
+
     res.json(result);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("❌ Failed in getAllPlayers:", err.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
 module.exports = { getAllPlayers };
