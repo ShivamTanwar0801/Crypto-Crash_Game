@@ -35,7 +35,7 @@ A real-time multiplayer crash betting game using cryptocurrency values and WebSo
 
 ## 📁 Folder Structure
 
-  Crypto-Crash_Game/
+Crypto-Crash_Game/
 │
 ├── backend/
 │ ├── models/
