@@ -32,94 +32,95 @@ A real-time multiplayer crash betting game using cryptocurrency values and WebSo
 - 🔐 Secure API with CORS and error handling
 - 📡 Real-time logs via WebSocket
 
-
 ## 📁 Folder Structure
 
+```
 Crypto-Crash_Game/
 │
 ├── backend/
-│ ├── models/
-│ ├── routes/
-│ ├── services/
-│ ├── controllers/
-│ └── server.js
+│   ├── models/
+│   ├── routes/
+│   ├── services/
+│   ├── controllers/
+│   └── server.js
 │
 ├── frontend/
-│ ├── src/
-│ │ ├── components/
-│ │ ├── App.jsx
-│ │ └── main.jsx
-│ └── vite.config.js
-
-markdown
-Copy
-Edit
+│   ├── src/
+│   │   ├── components/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   └── vite.config.js
+```
 
 ## 🔧 Setup Instructions
 
 ### Backend
 
-1. Navigate to `backend/`
+1. Navigate to `backend/`:
+    ```bash
+    cd backend
+    ```
+
 2. Install dependencies:
-   ```bash
-   npm install
-Create .env file:
+    ```bash
+    npm install
+    ```
 
-ini
-Copy
-Edit
-MONGO_URI=your_mongodb_url
-PORT=3000
-CMC_API_KEY=your_coinmarketcap_api_key
-Run the server:
+3. Create a `.env` file:
+    ```ini
+    MONGO_URI=your_mongodb_url
+    PORT=3000
+    CMC_API_KEY=your_coinmarketcap_api_key
+    ```
 
-bash
-Copy
-Edit
-node server.js
-Frontend
-Navigate to frontend/
+4. Run the server:
+    ```bash
+    node server.js
+    ```
 
-Install dependencies:
+### Frontend
 
-bash
-Copy
-Edit
-npm install
-Create .env file:
+1. Navigate to `frontend/`:
+    ```bash
+    cd frontend
+    ```
 
-ini
-Copy
-Edit
-VITE_BACKEND_URL=http://localhost:3000
-Run the dev server:
+2. Install dependencies:
+    ```bash
+    npm install
+    ```
 
-bash
-Copy
-Edit
-npm run dev
-🧪 Sample Player Wallets (MongoDB)
-json
-Copy
-Edit
+3. Create a `.env` file:
+    ```ini
+    VITE_BACKEND_URL=http://localhost:3000
+    ```
+
+4. Run the dev server:
+    ```bash
+    npm run dev
+    ```
+
+## 🧪 Sample Player Wallets (MongoDB)
+
+```json
 [
   { "username": "Alice", "wallet": { "bitcoin": 0.01, "ethereum": 0.5 } },
   { "username": "Bob", "wallet": { "bitcoin": 0.005, "ethereum": 0.3 } },
   { "username": "Charlie", "wallet": { "bitcoin": 0.02, "ethereum": 1.0 } }
 ]
-📷 Preview
+```
 
-🛠 Future Improvements
-Authentication system
+## 📷 Preview
 
-Admin dashboard
+*(Include preview screenshots or GIFs here if available)*
 
-Betting history per user
+## 🛠 Future Improvements
 
-Currency selector with dropdown
+- Authentication system
+- Admin dashboard
+- Betting history per user
+- Currency selector with dropdown
 
-🧑‍💻 Author
-Shivam Tanwar
+## 👨‍💻 Author
 
-## 📁 Folder Structure
-
+**Shivam Tanwar**
